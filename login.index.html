@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EVOLVERE INVEST - Cadastro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --verde: #1b5e20;
+      --verde-claro: #43a047;
+      --branco: #ffffff;
+      --cinza: #f4f6f8;
+      --texto: #333;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: var(--cinza);
+      color: var(--texto);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--branco);
+      border-radius: 20px;
+      padding: 32px 26px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    .card h1 {
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 6px;
+      color: var(--verde);
+    }
+    .card p {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 22px;
+      color: #555;
+    }
+
+    .etiqueta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--verde);
+      margin: 10px 0 6px;
+      display: block;
+    }
+
+    .entrada {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 2px solid #ddd;
+      background: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: 0.3s;
+    }
+    .entrada:focus {
+      border-color: var(--verde);
+      box-shadow: 0 0 0 3px rgba(27,94,32,0.15);
+    }
+    .entrada[readonly] {
+      background: #f4f6f8;
+      font-weight: 600;
+      color: #444;
+    }
+
+    /* TELEFONE */
+    .campo {
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .telefone-box {
+      display: flex;
+      align-items: center;
+    }
+    .telefone-prefixo {
+      padding: 14px 12px;
+      background: #eee;
+      border: 2px solid #ddd;
+      border-radius: 12px 0 0 12px;
+      font-weight: bold;
+      font-size: 15px;
+      color: var(--verde);
+    }
+    .telefone-input {
+      flex: 1;
+      border: 2px solid #ddd;
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+      padding: 14px 12px;
+      font-size: 15px;
+      outline: none;
+    }
+    .telefone-input:focus {border-color: var(--verde);}
+
+    /* BOTÕES */
+    .linha-botoes {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .botao {
+      width: 100%;
+      padding: 14px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .botao:hover {transform: translateY(-2px);}
+    .botao-verde {
+      background: var(--verde);
+      color: var(--branco);
+    }
+    .botao-cinza {
+      background: var(--cinza);
+      color: var(--verde);
+    }
+
+    .mensagem-erro {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #d32f2f;
+      min-height: 18px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CADASTRO -->
+  <main class="card">
+    <h1>EVOLVERE INVEST</h1>
+    <p>Crie sua conta</p>
+
+    <label class="etiqueta" for="nome">Nome completo</label>
+    <input type="text" id="nome" class="entrada" placeholder="Digite seu nome" required />
+
+    <label class="etiqueta" for="telefone">Telefone</label>
+    <div class="telefone-box">
+      <span class="telefone-prefixo">+244</span>
+      <input 
+        type="tel" 
+        id="telefone" 
+        class="telefone-input" 
+        placeholder="9 dígitos"
+        maxlength="9"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')" 
+        required 
+      />
+    </div>
+
+    <label class="etiqueta" for="senha">Senha</label>
+    <input type="password" id="senha" class="entrada" placeholder="Digite sua senha" required />
+
+    <label class="etiqueta" for="codigoConvite">Código de convite</label>
+    <input type="text" id="codigoConvite" class="entrada" readonly />
+
+    <div class="linha-botoes">
+      <button class="botao botao-verde" onclick="registrar()">Cadastrar</button>
+      <a href="index.html"><button type="button" class="botao botao-cinza">Já tenho conta</button></a>
+    </div>
+
+    <div id="mensagemErro" class="mensagem-erro"></div>
+  </main>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:web:3b7ee8b621fba094b2407e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    let codigoRealCompleto = null;
+
+    // Pega ref da URL e mostra só os 6 primeiros
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      if (ref) {
+        codigoRealCompleto = ref;
+        document.getElementById("codigoConvite").value = ref.substring(0,6);
+      }
+    };
+
+    function registrar(){
+      const nome = document.getElementById("nome").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+      const msgErro = document.getElementById("mensagemErro");
+
+      msgErro.textContent = "";
+
+      if(!nome || !telefone || !senha){
+        msgErro.textContent = "Preencha todos os campos.";
+        return;
+      }
+
+      if(telefone.length !== 9){
+        msgErro.textContent = "O telefone deve ter exatamente 9 dígitos.";
+        return;
+      }
+
+      const emailFalso = telefone + "@kerocapital.com"; 
+
+      auth.createUserWithEmailAndPassword(emailFalso, senha)
+        .then(cred=>{
+          const uid = cred.user.uid;
+          const usuario = {
+            nome: nome,
+            telefone: telefone,
+            saldo: 0,
+            codigoConviteCurto: uid.substring(0,6),
+            dataCadastro: new Date().toISOString()
+          };
+          if(codigoRealCompleto){
+            usuario.convidadoPor = codigoRealCompleto;
+          }
+          return database.ref("usuarios/"+uid).set(usuario);
+        })
+        .then(()=>{
+          window.location.href="tela.html";
+        })
+        .catch(err=>{
+          msgErro.textContent = "Erro: " + err.message;
+        });
+    }
+  </script>
+</body>
+</html>

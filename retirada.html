@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Levantamento - EVOLVERE INVEST</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 28px;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      animation: fadeIn 0.5s ease-out;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .saldo-box {
+      background: #f9fafb;
+      border: 2px solid #2ecc71; /* verde */
+      padding: 15px 18px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .registros-btn {
+      padding: 8px 16px;
+      font-weight: 500;
+      font-size: 13px;
+      color: #fff;
+      background: #2ecc71; /* verde */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .registros-btn:hover {
+      background: #27ae60; /* verde escuro */
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+      background: #fff;
+      color: #333;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-color: #2ecc71; /* verde */
+    }
+
+    .bancos {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+
+    .banco {
+      background: #f1f3f5;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .banco:hover {
+      border-color: #2ecc71; /* verde */
+    }
+
+    .banco.ativo {
+      background: #2ecc71; /* verde */
+      color: #fff;
+      border-color: #2ecc71;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: #2ecc71; /* verde */
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      color: #fff;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #27ae60; /* verde escuro */
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 12px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .mensagem {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Levantamento</h2>
+
+    <div class="saldo-box">
+      <span id="saldo">A carregar...</span>
+      <a href="registros2.html" class="registros-btn">Extrato</a>
+    </div>
+
+    <div class="form-group">
+      <label for="valor">Quantia a levantar (AOA)</label>
+      <input type="number" id="valor" placeholder="Informe o valor (mínimo 1500)">
+    </div>
+
+    <div class="form-group">
+      <label>Escolha o banco</label>
+      <div class="bancos" id="listaBancos">
+        <div class="banco" data-banco="BFA">BFA</div>
+        <div class="banco" data-banco="ATL">ATL</div>
+        <div class="banco" data-banco="BAI">BAI</div>
+        <div class="banco" data-banco="BIC">BIC</div>
+        <div class="banco" data-banco="SOL">SOL</div>
+        <div class="banco" data-banco="BCI">BCI</div>
+        <div class="banco" data-banco="BPC">BPC</div>
+        <div class="banco" data-banco="KEVE">KEVE</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="nib">Número da conta / IBAN</label>
+      <input type="text" id="nib" placeholder="Digite a conta bancária / IBAN">
+    </div>
+
+    <div class="form-group">
+      <label for="titular">Nome do titular</label>
+      <input type="text" id="titular" placeholder="Digite o nome do titular da conta">
+    </div>
+
+    <button class="btn" id="btnRetirar" onclick="fazerRetirada()">Confirmar Levantamento</button>
+
+    <div class="note">
+      Verifique se todas as informações estão certas.<br>
+      Depois da validação, a solicitação será revista pela nossa equipe e concluída em até 1 hora.
+    </div>
+
+    <div class="mensagem" id="mensagem"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:android:3b7ee8b621fba094b2407e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    let userId = null;
+    let saldoAtual = 0;
+    let bancoSelecionado = "";
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) location.href = "index.html";
+      userId = user.uid;
+      const userRef = firebase.database().ref("usuarios/" + userId);
+
+      userRef.child("saldo").on("value", snapshot => {
+        saldoAtual = snapshot.val() || 0;
+        document.getElementById("saldo").innerText = `AOA ${saldoAtual.toLocaleString('pt-AO')}`;
+      });
+
+      userRef.child("dadosBancarios").once("value").then(snapshot => {
+        if (snapshot.exists()) {
+          const dados = snapshot.val();
+          bancoSelecionado = dados.banco || "";
+          if (bancoSelecionado) {
+            document.querySelectorAll(".banco").forEach(el => {
+              if (el.dataset.banco === bancoSelecionado) {
+                el.classList.add("ativo");
+              }
+            });
+          }
+          document.getElementById("nib").value = dados.nib || "";
+          document.getElementById("titular").value = dados.titular || "";
+        }
+      });
+    });
+
+    document.addEventListener("click", e => {
+      if (e.target.classList.contains("banco")) {
+        document.querySelectorAll(".banco").forEach(el => el.classList.remove("ativo"));
+        e.target.classList.add("ativo");
+        bancoSelecionado = e.target.dataset.banco;
+      }
+    });
+
+    function fazerRetirada() {
+      const valor = parseFloat(document.getElementById("valor").value);
+      const nib = document.getElementById("nib").value.trim();
+      const titular = document.getElementById("titular").value.trim();
+      const mensagemEl = document.getElementById("mensagem");
+
+      if (isNaN(valor) || valor < 1500) {
+        mensagemEl.innerText = "⚠️ O valor mínimo para levantamento é 1500 AOA.";
+        return;
+      }
+
+      if (valor > saldoAtual) {
+        mensagemEl.innerText = "⚠️ O valor solicitado ultrapassa o disponível.";
+        return;
+      }
+
+      if (!bancoSelecionado || !nib || !titular) {
+        mensagemEl.innerText = "⚠️ Preencha todos os dados bancários.";
+        return;
+      }
+
+      const userRef = firebase.database().ref("usuarios/" + userId);
+      const novoSaldo = saldoAtual - valor;
+
+      userRef.child("saldo").set(novoSaldo);
+      userRef.child("dadosBancarios").set({ banco: bancoSelecionado, nib, titular });
+
+      userRef.child("nome").once("value").then(nomeSnap => {
+        const nome = nomeSnap.val() || "Cliente";
+        firebase.database().ref("retiradas").push().set({
+          userId,
+          nome,
+          saldoAnterior: saldoAtual,
+          valorRetirada: valor,
+          banco: bancoSelecionado,
+          nib,
+          titular,
+          status: "pendente",
+          timestamp: Date.now()
+        });
+        mensagemEl.innerText = "✅ Pedido de levantamento enviado com sucesso!";
+      });
+    }
+  </script>
+</body>
+</html>

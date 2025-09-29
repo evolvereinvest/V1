@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Histórico de Saques</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --dourado: #d4af37;
+      --verde: #15803d;
+      --vermelho: #dc2626;
+      --amarelo: #eab308;
+      --branco: #ffffff;
+      --cinza: #f4f6f3;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--cinza);
+      margin: 0;
+      padding: 15px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--dourado);
+      margin-bottom: 20px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .painel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .cartao {
+      background: var(--branco);
+      border: 2px solid var(--verde);
+      border-radius: 14px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .titulo {
+      font-weight: bold;
+      font-size: 15px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status {
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .ok {
+      background: #e7fbe9;
+      color: var(--verde);
+      border: 1px solid var(--verde);
+    }
+
+    .aguardo {
+      background: #fff8e1;
+      color: var(--amarelo);
+      border: 1px solid var(--amarelo);
+    }
+
+    .falhou {
+      background: #fde2e2;
+      color: var(--vermelho);
+      border: 1px solid var(--vermelho);
+    }
+
+    .valor {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--verde);
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .valor small {
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .momento {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nenhum {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-top: 20px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(10px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💳 Histórico de Saques</h1>
+
+  <div class="painel" id="listaSaques"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:android:3b7ee8b621fba094b2407e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function obterClasse(status) {
+      const s = status?.toLowerCase() || "aguardo";
+      if (s === "aprovado") return "ok";
+      if (s === "pendente") return "aguardo";
+      if (s === "rejeitado") return "falhou";
+      return "";
+    }
+
+    function traduzirStatus(status) {
+      const s = status?.toLowerCase();
+      if (s === "aprovado") return "Confirmado";
+      if (s === "pendente") return "Em análise";
+      if (s === "rejeitado") return "Recusado";
+      return "Em análise";
+    }
+
+    function formatarData(ts) {
+      const d = new Date(ts);
+      return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric" }) 
+             + " " + d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        alert("Sessão expirada, faça login novamente.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const uid = user.uid;
+      const container = document.getElementById("listaSaques");
+
+      db.ref("retiradas").once("value").then(snapshot => {
+        if (!snapshot.exists()) {
+          container.innerHTML = "<p class='nenhum'>Nenhum saque registado.</p>";
+          return;
+        }
+
+        let conteudo = "";
+        snapshot.forEach(child => {
+          const val = child.val();
+          if (val.userId === uid) {
+            // ✅ pega valor de 'valorRetirada' ou 'valor'
+            const valor = parseFloat(val.valorRetirada || val.valor || 0);
+
+            conteudo = `
+              <div class="cartao">
+                <div class="topo">
+                  <div class="titulo">💰 Saque</div>
+                  <div class="status ${obterClasse(val.status)}">${traduzirStatus(val.status)}</div>
+                </div>
+                <div class="valor">💵 Kz ${valor.toLocaleString("pt-AO", {minimumFractionDigits: 2})} <small>Valor</small></div>
+                <div class="momento">📅 ${formatarData(val.data || val.timestamp)}</div>
+              </div>
+            ` + conteudo;
+          }
+        });
+
+        container.innerHTML = conteudo || "<p class='nenhum'>Ainda não realizou saques.</p>";
+      });
+    });
+  </script>
+</body>
+</html>

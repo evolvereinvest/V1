@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EVOLVERE INVEST - Planos</title>
+  <style>
+    :root {
+      --green: #0f7b2c;
+      --green-dark: #064d1a;
+      --white: #ffffff;
+      --light: #f9fdf9;
+      --gray: #444;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--light);
+      margin: 0;
+      padding: 30px 15px;
+      color: var(--gray);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin: 0;
+    }
+
+    .planos-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .plano {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 25px 22px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all .25s ease;
+    }
+
+    .plano:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+
+    .plano h3 {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--green-dark);
+    }
+
+    /* Container do preço e botão na mesma linha */
+    .valor-acoes {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 10px;
+    }
+
+    .valor-principal {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    /* Botão Comprar */
+    .plano button {
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #0f7b2c, #11a13a);
+      color: var(--white);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(15, 123, 44, 0.25);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .plano button:hover {
+      background: linear-gradient(135deg, #0c5e21, #0f7b2c);
+      box-shadow: 0 6px 16px rgba(15, 123, 44, 0.35);
+      transform: translateY(-3px);
+    }
+
+    .plano button:active {
+      transform: scale(0.97);
+      box-shadow: 0 3px 10px rgba(15, 123, 44, 0.3);
+    }
+
+    .detalhes {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 15px;
+    }
+
+    .linha {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f5f7f5;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .linha span {
+      font-weight: 500;
+      color: #555;
+    }
+
+    .linha .valor {
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+
+    /* Aviso centralizado */
+    #mensagem {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--white);
+      border-radius: 14px;
+      padding: 20px 25px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--green-dark);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      z-index: 2000;
+      max-width: 90%;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -48%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Planos de Crescimento</h1>
+  </header>
+
+  <div class="planos-container">
+    <div class="plano" data-preco="7000">
+      <h3>🌱 Semente Verde</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 7.000</div>
+        <button onclick="comprar(7000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+
+    <div class="plano" data-preco="14000">
+      <h3>🌿 Raiz Forte</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 14.000</div>
+        <button onclick="comprar(14000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+
+    <div class="plano" data-preco="20000">
+      <h3>🌳 Árvore Próspera</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 20.000</div>
+        <button onclick="comprar(20000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+
+    <div class="plano" data-preco="50000">
+      <h3>🌲 Floresta Dourada</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 50.000</div>
+        <button onclick="comprar(50000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+
+    <div class="plano" data-preco="100000">
+      <h3>🌅 Horizonte Infinito</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 100.000</div>
+        <button onclick="comprar(100000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+
+    <div class="plano" data-preco="200000">
+      <h3>🌄 Horizonte Dourado</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 200.000</div>
+        <button onclick="comprar(200000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+
+    <div class="plano" data-preco="300000">
+      <h3>🌌 Universo Verde</h3>
+      <div class="valor-acoes">
+        <div class="valor-principal">AOA 300.000</div>
+        <button onclick="comprar(300000)">Comprar</button>
+      </div>
+      <div class="detalhes">
+        <div class="linha"><span>⏳ Duração</span><div class="valor">28 dias</div></div>
+        <div class="linha renda"></div>
+        <div class="linha total"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aviso -->
+  <div id="mensagem"></div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:android:3b7ee8b621fba094b2407e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    let userId = null;
+    let saldoAtual = 0;
+    const DIAS = 28;
+    const TAXA_DIARIA = 0.2194; // 21,94%
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        userId = user.uid;
+        firebase.database().ref('usuarios/' + userId + '/saldo').once('value').then(snapshot => {
+          saldoAtual = snapshot.val() || 0;
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    function mostrarMensagem(texto) {
+      const msg = document.getElementById("mensagem");
+      msg.innerText = texto;
+      msg.style.display = "block";
+
+      setTimeout(() => {
+        msg.style.display = "none";
+      }, 4000);
+    }
+
+    function comprar(preco) {
+      if (saldoAtual < preco) {
+        mostrarMensagem("⚠️ Saldo insuficiente para este investimento.");
+        return;
+      }
+
+      const rendaDiaria = (preco * TAXA_DIARIA).toFixed(2);
+      const rendimentoTotal = (rendaDiaria * DIAS).toFixed(2);
+
+      const investimento = {
+        preco: preco,
+        dias: DIAS,
+        rendimento: rendimentoTotal,
+        inicio: Date.now(),
+        status: "ativo"
+      };
+
+      const novaCompra = firebase.database().ref('usuarios/' + userId + '/investimentos').push();
+      novaCompra.set(investimento)
+        .then(() => {
+          saldoAtual -= preco;
+          firebase.database().ref('usuarios/' + userId + '/saldo').set(saldoAtual);
+          mostrarMensagem(`✅ Investimento realizado com sucesso!
+📈 Renda diária: AOA ${rendaDiaria}
+🏦 Ganho total: AOA ${rendimentoTotal}`);
+        })
+        .catch(error => {
+          mostrarMensagem("❌ Erro ao investir. Tente novamente.");
+          console.error(error);
+        });
+    }
+
+    // Preencher automaticamente renda diária e ganho total nos cards
+    document.querySelectorAll(".plano").forEach(plano => {
+      const preco = parseInt(plano.dataset.preco);
+      const rendaDiaria = (preco * TAXA_DIARIA).toFixed(2);
+      const ganho = (rendaDiaria * DIAS).toFixed(2);
+
+      plano.querySelector(".linha.renda").innerHTML =
+        `<span>📈 Renda diária</span><div class="valor">AOA ${rendaDiaria}</div>`;
+      plano.querySelector(".linha.total").innerHTML =
+        `<span>🏦 Ganho total</span><div class="valor">AOA ${ganho}</div>`;
+    });
+  </script>
+</body>
+</html>

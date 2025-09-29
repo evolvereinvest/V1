@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Informações de Equipe - EVOLVERE INVEST</title>
+  <style>
+    :root {
+      --primary: #2e7d32;
+      --light-gray: #f4f4f4;
+      --text-dark: #222;
+      --muted: #666;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--light-gray);
+      color: var(--text-dark);
+    }
+
+    header {
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #0d2761;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-weight: 600;
+      color: #555;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .card {
+      margin: 12px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .info-col {
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .info-value {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .info-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .copy-btn {
+      display: inline-block;
+      width: 100%;
+      padding: 10px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .copy-btn:hover {
+      background: #256428;
+    }
+
+    .table-container {
+      margin: 12px;
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    table {
+      width: 100%;
+      min-width: 250px;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    tr:hover td {
+      background-color: #f1f8f2;
+    }
+
+    /* Estilo do aviso de comissão */
+    .percent-info {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span onclick="history.back()" style="cursor:pointer;">⬅</span>
+    <h2>Informações de equipe</h2>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="mudarAba('LV1')">LV1</div>
+    <div class="tab" onclick="mudarAba('LV2')">LV2</div>
+    <div class="tab" onclick="mudarAba('LV3')">LV3</div>
+  </div>
+
+  <div class="card">
+    <p>Se o colega que você convidar aplicar valores, você poderá conquistar bons retornos.</p>
+
+    <div class="info-row">
+      <div class="info-col">
+        <div class="info-value" id="total">0</div>
+        <div class="info-label">Quantidade</div>
+      </div>
+      <div class="info-col">
+        <div class="info-value" id="deposito">Kz0.00</div>
+        <div class="info-label">Comissão total</div>
+      </div>
+    </div>
+
+    <button class="copy-btn" onclick="copiarLink()">📎 Copiar link de convite</button>
+    <p id="linkConvite" style="margin-top:10px;font-size:11px;color:#333;word-break:break-word;"></p>
+  </div>
+
+  <!-- Percentual dinâmico -->
+  <div class="percent-info" id="percentInfo">Comissão: 20%</div>
+
+  <div class="table-container">
+    <table id="tabelaConvidados">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Investimento</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="info-row">
+      <div class="info-col">
+        <div class="info-value" id="totalGeral">Kz0.00</div>
+        <div class="info-label">Comissão Geral (a cada 5 min)</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:android:3b7ee8b621fba094b2407e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    let convidados = {};
+    let abaAtual = "LV1";
+    let uidGlobal = null;
+    let totalGeralAtual = 0;
+
+    // Comissão ajustada: LV1 = 20%
+    const percentuais = { LV1: "20%", LV2: "3%", LV3: "1%" };
+
+    function calcularComissao(nivel, capital) {
+      if (nivel === "LV1") return capital * 0.20;
+      if (nivel === "LV2") return capital * 0.03;
+      if (nivel === "LV3") return capital * 0.01;
+      return 0;
+    }
+
+    function renderTabela(nivel) {
+      const tbody = document.querySelector("#tabelaConvidados tbody");
+      tbody.innerHTML = "";
+      let totalComissao = 0;
+
+      if (convidados[nivel]) {
+        convidados[nivel].forEach(convidado => {
+          const capital = parseFloat(convidado.capital || 0);
+          const comissao = calcularComissao(nivel, capital);
+
+          const row = `
+            <tr>
+              <td>${convidado.nome || "-"}</td>
+              <td>Kz${capital.toFixed(2)}</td>
+            </tr>
+          `;
+          tbody.insertAdjacentHTML("beforeend", row);
+
+          totalComissao += comissao;
+        });
+      }
+
+      document.getElementById("total").textContent = convidados[nivel]?.length || 0;
+      document.getElementById("deposito").textContent = `Kz${totalComissao.toFixed(2)}`;
+
+      // Atualiza o texto do percentual
+      document.getElementById("percentInfo").textContent = `Comissão: ${percentuais[nivel]}`;
+    }
+
+    function renderTotalGeral() {
+      let totalGeral = 0;
+      Object.keys(convidados).forEach(nivel => {
+        convidados[nivel].forEach(c => {
+          totalGeral += calcularComissao(nivel, parseFloat(c.capital || 0));
+        });
+      });
+      totalGeralAtual = totalGeral;
+      document.getElementById("totalGeral").textContent = `Kz${totalGeral.toFixed(2)}`;
+    }
+
+    // Função para creditar no saldo e zerar comissão geral
+    async function creditarComissao() {
+      if (!uidGlobal) return;
+      const saldoRef = ref(db, `usuarios/${uidGlobal}/saldo`);
+
+      try {
+        const snap = await get(saldoRef);
+        let saldoAtual = 0;
+        if (snap.exists()) {
+          saldoAtual = parseFloat(snap.val() || 0);
+        }
+
+        const novoSaldo = saldoAtual + totalGeralAtual;
+
+        await update(saldoRef, { valor: novoSaldo });
+
+        totalGeralAtual = 0;
+        document.getElementById("totalGeral").textContent = "Kz0.00";
+      } catch (err) {
+        console.error("Erro ao atualizar saldo:", err);
+      }
+    }
+
+    window.mudarAba = function(nivel) {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelector(`.tab:nth-child(${nivel === "LV1" ? 1 : nivel === "LV2" ? 2 : 3})`).classList.add("active");
+      abaAtual = nivel;
+      renderTabela(nivel);
+    };
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        alert("Sessão expirada. Faça login novamente.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      uidGlobal = user.uid;
+      const conviteCurto = uidGlobal.slice(-6);
+      const link = `${window.location.origin}/login.index.html?ref=${conviteCurto}`;
+      document.getElementById("linkConvite").textContent = link;
+
+      const convidadosRef = ref(db, `usuarios/${uidGlobal}/convidados`);
+      onValue(convidadosRef, snapshot => {
+        convidados = { LV1: [], LV2: [], LV3: [] };
+
+        snapshot.forEach(child => {
+          const convidado = child.val();
+          const nivel = convidado.nivel || "LV1";
+          if (convidados[nivel]) {
+            convidados[nivel].push(convidado);
+          }
+        });
+
+        renderTabela(abaAtual);
+        renderTotalGeral();
+      });
+
+      setInterval(creditarComissao, 300000); // 5 minutos
+    });
+
+    window.copiarLink = function () {
+      const texto = document.getElementById("linkConvite").textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Link copiado com sucesso!");
+      });
+    };
+  </script>
+</body>
+</html>

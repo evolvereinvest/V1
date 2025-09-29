@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>EVOLVERE INVEST</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #16a34a;
+      --bg: #f3f4f6;
+      --text: #1f2937;
+      --card: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      min-height: 100vh;
+      background: var(--bg);
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 90px;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      padding: 18px 22px;
+      color: white;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand img {
+      width: 40px;
+      height: 40px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .notif-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      border-radius: 50%;
+      padding: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .notif-btn:hover {
+      background: rgba(255,255,255,0.25);
+    }
+    .notif-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* SALDO */
+    .saldo-card {
+      margin: 20px auto;
+      padding: 20px;
+      width: 90%;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .user-name { font-size: 15px; font-weight: 600; color: var(--text); }
+    .user-id { font-size: 13px; color: #6b7280; }
+    .saldo-right { font-size: 22px; font-weight: 700; color: var(--primary); }
+
+    /* AÇÕES */
+    .action-grid {
+      margin: 20px auto;
+      padding: 0 15px;
+      display: grid;
+      gap: 12px;
+    }
+    .action-grid.two { grid-template-columns: repeat(2, 1fr); }
+    .action-grid.one { grid-template-columns: 1fr; }
+    .action-card {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .action-card:hover { transform: scale(1.02); }
+    .action-card img { width: 32px; height: 32px; }
+    .action-text { display: flex; flex-direction: column; }
+    .action-title { font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+    .action-subtitle { font-size: 12px; color: #6b7280; }
+
+    /* COMISSÃO */
+    .comissao-card {
+      width: 90%;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .comissao-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      font-weight: 600;
+      font-size: 15px;
+      border-bottom: 1px solid #eee;
+      color: #111827;
+    }
+    .comissao-header a {
+      color: #16a34a;
+      font-size: 14px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .comissao-body {
+      background: #e9e5fb;
+      padding: 15px;
+      text-align: center;
+    }
+    .comissao-body a {
+      display: block;
+      color: #16a34a;
+      font-size: 14px;
+      margin-bottom: 12px;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+    .copy-btn {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: #15803d; }
+
+    /* MENU */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      display: flex;
+      justify-content: space-around;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      box-shadow: 0 -3px 8px rgba(0,0,0,0.1);
+      padding: 10px 0 12px;
+    }
+    nav button {
+      background: none;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    nav button .icon-wrap {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.25s;
+    }
+    nav button img { width: 22px; height: 22px; }
+    nav button.active { color: var(--primary); }
+    nav button.active .icon-wrap { background: rgba(22,163,74,0.15); }
+    nav button:hover .icon-wrap { background: rgba(22,163,74,0.08); }
+
+    /* TOAST */
+    .toast {
+      visibility: hidden;
+      min-width: 200px;
+      background: #16a34a;
+      color: white;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px;
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s;
+    }
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 110px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-content">
+        <div class="brand">
+          <img src="https://img.icons8.com/fluency/48/investment.png" alt="Logo"/>
+          <div>
+            <h1>EVOLVERE INVEST</h1>
+            <p>Investir para crescer</p>
+          </div>
+        </div>
+        <button class="notif-btn" onclick="alert('Notificações em breve!')">
+          <img src="https://img.icons8.com/fluency/24/appointment-reminders.png" alt="Notificações"/>
+        </button>
+      </div>
+    </header>
+
+    <!-- SALDO -->
+    <div class="saldo-card">
+      <div>
+        <div class="user-name" id="userName">Bem-vindo, Cliente</div>
+        <div class="user-id" id="userId">ID: 000000</div>
+      </div>
+      <div class="saldo-right" id="userSaldo">Kz 0,00</div>
+    </div>
+
+    <!-- AÇÕES -->
+    <div class="action-grid two">
+      <div class="action-card" onclick="location.href='deposito.html'">
+        <img src="https://img.icons8.com/fluency/48/money-transfer.png"/>
+        <div class="action-text">
+          <span class="action-title">Depósito</span>
+          <span class="action-subtitle">Adicionar fundos</span>
+        </div>
+      </div>
+      <div class="action-card" onclick="location.href='retirada.html'">
+        <img src="https://img.icons8.com/fluency/48/money.png"/>
+        <div class="action-text">
+          <span class="action-title">Retirada</span>
+          <span class="action-subtitle">Saque seu saldo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-grid one">
+      <div class="action-card" onclick="location.href='equipe.html'">
+        <img src="https://img.icons8.com/fluency/48/conference-call.png"/>
+        <div class="action-text">
+          <span class="action-title">Equipe</span>
+          <span class="action-subtitle">Gerencie afiliados</span>
+        </div>
+      </div>
+
+      <!-- NOVOS BOTÕES -->
+      <div class="action-card" onclick="window.open('https://chat.whatsapp.com/FGajoPiEbwQGqWGpP2VsBN?mode=ems_copy_t','_blank')">
+        <img src="https://img.icons8.com/fluency/48/whatsapp.png"/>
+        <div class="action-text">
+          <span class="action-title">Grupo Whatsapp</span>
+          <span class="action-subtitle">Entre no grupo</span>
+        </div>
+      </div>
+
+      <div class="action-card" onclick="window.open('https://wa.me/244958682976','_blank')">
+        <img src="https://img.icons8.com/fluency/48/businessman.png"/>
+        <div class="action-text">
+          <span class="action-title">Gerente 24/24</span>
+          <span class="action-subtitle">Suporte imediato</span>
+        </div>
+      </div>
+
+      <div class="action-card" onclick="logout()">
+        <img src="https://img.icons8.com/fluency/48/exit.png"/>
+        <div class="action-text">
+          <span class="action-title">Terminar sessão</span>
+          <span class="action-subtitle">Sair da conta</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMISSÃO -->
+    <div class="comissao-card">
+      <div class="comissao-header">
+        <span>Comissão de promoção</span>
+        <a href="equipe.html">Ver mais</a>
+      </div>
+      <div class="comissao-body">
+        <a href="#" id="linkConvite" target="_blank">Carregando link...</a>
+        <button class="copy-btn" onclick="copiarLink()">➕ Copiar Link de convite</button>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <nav>
+      <button class="active" onclick="location.href='tela.html'">
+        <div class="icon-wrap"><img src="https://img.icons8.com/fluency/48/home.png"/></div>
+        Casa
+      </button>
+      <button onclick="location.href='invest.html'">
+        <div class="icon-wrap"><img src="https://img.icons8.com/fluency/48/combo-chart.png"/></div>
+        Planos
+      </button>
+      <button onclick="location.href='ativos.html'">
+        <div class="icon-wrap"><img src="https://img.icons8.com/fluency/48/user-male-circle.png"/></div>
+        Meus
+      </button>
+    </nav>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">Link copiado com sucesso!</div>
+  </div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:web:3b7ee8b621fba094b2407e"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const uid = user.uid;
+        document.getElementById('userId').innerText = "ID: " + uid.substring(0, 6);
+
+        firebase.database().ref('usuarios/' + uid).once('value').then(snapshot => {
+          const data = snapshot.val();
+          if (data) {
+            document.getElementById('userName').innerText = data.nome || 'Cliente';
+            const saldo = Number(data.saldo || 0).toLocaleString('pt-AO', { minimumFractionDigits: 2 });
+            document.getElementById('userSaldo').innerText = "Kz " + saldo;
+          }
+        });
+
+        // 🔗 Link de convite
+        const conviteCurto = uid.slice(-6);
+        const link = `${window.location.origin}/login.index.html?ref=${conviteCurto}`;
+        document.getElementById("linkConvite").textContent = link;
+        document.getElementById("linkConvite").href = link;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    function copiarLink() {
+      const texto = document.getElementById("linkConvite").textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        mostrarToast();
+      });
+    }
+
+    function mostrarToast() {
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => { toast.classList.remove("show"); }, 2500);
+    }
+
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+  </script>
+</body>
+</html>

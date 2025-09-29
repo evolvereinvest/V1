@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Entrar - EVOLVERE INVEST</title>
+  <style>
+    :root {
+      --verde: #1b5e20;
+      --verde-claro: #43a047;
+      --branco: #ffffff;
+      --cinza: #f4f6f8;
+      --texto: #333;
+    }
+
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: var(--cinza);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--texto);
+    }
+
+    /* CONTAINER */
+    .card {
+      width: 100%;
+      max-width: 380px;
+      padding: 32px 26px;
+      border-radius: 20px;
+      background: var(--branco);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    .card h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--verde);
+      margin-bottom: 6px;
+    }
+    .card p {
+      font-size: 14px;
+      margin-bottom: 22px;
+      color: #555;
+    }
+
+    .etiqueta {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 12px 0 6px;
+      color: var(--verde);
+    }
+    .esquerda { text-align: left; }
+    .direita { text-align: right; }
+
+    .entrada {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      transition: 0.3s;
+    }
+    .entrada:focus {
+      border-color: var(--verde);
+      box-shadow: 0 0 0 3px rgba(27,94,32,0.15);
+    }
+
+    .campo {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .prefixo {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-weight: 700;
+      color: var(--verde);
+      pointer-events: none;
+    }
+    .com-prefixo { padding-left: 58px; }
+
+    .linha-botoes {
+      margin-top: 18px;
+    }
+    .botao {
+      width: 100%;
+      padding: 14px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .botao:hover { transform: translateY(-2px); }
+    .botao-escuro {
+      background: var(--verde);
+      color: var(--branco);
+    }
+
+    .mensagem-erro {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #d32f2f;
+      min-height: 18px;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <main class="card">
+    <h1>EVOLVERE INVEST</h1>
+    <p>Entre na sua área</p>
+
+    <div class="etiqueta esquerda">Telemóvel</div>
+    <div class="campo">
+      <span class="prefixo">+244</span>
+      <input id="telefone" class="entrada com-prefixo" type="tel" inputmode="numeric" placeholder="Ex: 923456789" />
+    </div>
+
+    <div class="etiqueta direita">Senha</div>
+    <div class="campo">
+      <!-- senha visível -->
+      <input id="senha" class="entrada" type="text" placeholder="Senha" />
+    </div>
+
+    <div class="linha-botoes">
+      <button class="botao botao-escuro" id="botaoAcessar">Entrar</button>
+    </div>
+
+    <div id="mensagemErro" class="mensagem-erro"></div>
+  </main>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyChrog4zZNoK8HTMl1MTMD43U7HHxBMtVw",
+      authDomain: "palpite3ad.firebaseapp.com",
+      projectId: "palpite3ad",
+      storageBucket: "palpite3ad.appspot.com",
+      messagingSenderId: "435372004187",
+      appId: "1:435372004187:android:3b7ee8b621fba094b2407e",
+      databaseURL: "https://palpite3ad-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const botao = document.getElementById("botaoAcessar");
+    const msgErro = document.getElementById("mensagemErro");
+
+    function acessar() {
+      msgErro.textContent = ""; 
+      const tel = document.getElementById("telefone").value.replace(/\s+/g,'').trim();
+      const chave = document.getElementById("senha").value;
+
+      if (!/^\d{9}$/.test(tel)) {
+        msgErro.textContent = "Insira um número válido (9 dígitos).";
+        return;
+      }
+      if (!chave){
+        msgErro.textContent = "Preencha sua senha.";
+        return;
+      }
+
+      const emailFake = tel + "@kerocapital.com";
+
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(()=>{
+        return firebase.auth().signInWithEmailAndPassword(emailFake, chave);
+      })
+      .then(() => { window.location.href = "tela.html"; })
+      .catch(err => { msgErro.textContent = "Erro ao entrar: " + err.message; });
+    }
+
+    botao.addEventListener("click", acessar);
+    document.addEventListener("keydown", (e)=>{ if(e.key==="Enter") acessar(); });
+  </script>
+</body>
+</html>
