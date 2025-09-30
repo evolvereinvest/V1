@@ -378,7 +378,8 @@
         const uid = user.uid;
         document.getElementById('userId').innerText = "ID: " + uid.substring(0, 6);
 
-        firebase.database().ref('usuarios/' + uid).once('value').then(snapshot => {
+        // 👤 Dados do usuário em tempo real
+        firebase.database().ref('usuarios/' + uid).on('value', snapshot => {
           const data = snapshot.val();
           if (data) {
             document.getElementById('userName').innerText = data.nome || 'Cliente';
@@ -387,8 +388,8 @@
           }
         });
 
-        // 🔗 Link de convite com link fixo oficial
-        const conviteCurto = uid.slice(-6);
+        // 🔗 Link de convite usando os primeiros 6 caracteres do UID (consistente com cadastro)
+        const conviteCurto = uid.substring(0, 6);
         const link = `https://evolvereinvest.github.io/V1/login.index.html?ref=${conviteCurto}`;
         document.getElementById("linkConvite").textContent = link;
         document.getElementById("linkConvite").href = link;
