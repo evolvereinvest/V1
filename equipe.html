@@ -146,7 +146,6 @@
       background-color: #f1f8f2;
     }
 
-    /* Estilo do aviso de comissão */
     .percent-info {
       text-align: center;
       font-size: 12px;
@@ -187,7 +186,6 @@
     <p id="linkConvite" style="margin-top:10px;font-size:11px;color:#333;word-break:break-word;"></p>
   </div>
 
-  <!-- Percentual dinâmico -->
   <div class="percent-info" id="percentInfo">Comissão: 20%</div>
 
   <div class="table-container">
@@ -235,7 +233,6 @@
     let uidGlobal = null;
     let totalGeralAtual = 0;
 
-    // Comissão ajustada: LV1 = 20%
     const percentuais = { LV1: "20%", LV2: "3%", LV3: "1%" };
 
     function calcularComissao(nivel, capital) {
@@ -269,8 +266,6 @@
 
       document.getElementById("total").textContent = convidados[nivel]?.length || 0;
       document.getElementById("deposito").textContent = `Kz${totalComissao.toFixed(2)}`;
-
-      // Atualiza o texto do percentual
       document.getElementById("percentInfo").textContent = `Comissão: ${percentuais[nivel]}`;
     }
 
@@ -285,7 +280,6 @@
       document.getElementById("totalGeral").textContent = `Kz${totalGeral.toFixed(2)}`;
     }
 
-    // Função para creditar no saldo e zerar comissão geral
     async function creditarComissao() {
       if (!uidGlobal) return;
       const saldoRef = ref(db, `usuarios/${uidGlobal}/saldo`);
@@ -298,7 +292,6 @@
         }
 
         const novoSaldo = saldoAtual + totalGeralAtual;
-
         await update(saldoRef, { valor: novoSaldo });
 
         totalGeralAtual = 0;
@@ -324,19 +317,32 @@
 
       uidGlobal = user.uid;
       const conviteCurto = uidGlobal.slice(-6);
-      // 🔗 Usando link oficial fixo
       const link = `https://evolvereinvest.github.io/V1/login.index.html?ref=${conviteCurto}`;
       document.getElementById("linkConvite").textContent = link;
 
-      const convidadosRef = ref(db, `usuarios/${uidGlobal}/convidados`);
-      onValue(convidadosRef, snapshot => {
+      // 🔹 Buscar todos usuários e calcular soma de investimentos ativos
+      const usuariosRef = ref(db, "usuarios");
+      onValue(usuariosRef, snapshot => {
         convidados = { LV1: [], LV2: [], LV3: [] };
 
         snapshot.forEach(child => {
-          const convidado = child.val();
-          const nivel = convidado.nivel || "LV1";
-          if (convidados[nivel]) {
-            convidados[nivel].push(convidado);
+          const usuario = child.val();
+
+          if (usuario.convidadoPor === uidGlobal) {
+            let totalInvestido = 0;
+            if (usuario.investimentos) {
+              Object.values(usuario.investimentos).forEach(inv => {
+                if (inv.status === "ativo") {
+                  totalInvestido += parseFloat(inv.preco || 0);
+                }
+              });
+            }
+
+            convidados["LV1"].push({
+              nome: usuario.nome || "-",
+              capital: totalInvestido,
+              nivel: "LV1"
+            });
           }
         });
 
@@ -344,7 +350,7 @@
         renderTotalGeral();
       });
 
-      setInterval(creditarComissao, 300000); // 5 minutos
+      setInterval(creditarComissao, 300000);
     });
 
     window.copiarLink = function () {
