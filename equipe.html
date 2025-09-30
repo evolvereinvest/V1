@@ -211,7 +211,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -232,6 +232,7 @@
     let abaAtual = "LV1";
     let uidGlobal = null;
     let totalGeralAtual = 0;
+    let conviteCurtoGlobal = null;
 
     const percentuais = { LV1: "20%", LV2: "3%", LV3: "1%" };
 
@@ -292,7 +293,7 @@
         }
 
         const novoSaldo = saldoAtual + totalGeralAtual;
-        await update(saldoRef, { valor: novoSaldo });
+        await set(saldoRef, novoSaldo); // ✅ agora grava direto como número
 
         totalGeralAtual = 0;
         document.getElementById("totalGeral").textContent = "Kz0.00";
@@ -316,38 +317,44 @@
       }
 
       uidGlobal = user.uid;
-      const conviteCurto = uidGlobal.slice(-6);
-      const link = `https://evolvereinvest.github.io/V1/login.index.html?ref=${conviteCurto}`;
-      document.getElementById("linkConvite").textContent = link;
 
-      // 🔹 Buscar todos usuários e calcular soma de investimentos ativos
-      const usuariosRef = ref(db, "usuarios");
-      onValue(usuariosRef, snapshot => {
-        convidados = { LV1: [], LV2: [], LV3: [] };
+      const usuarioLogadoRef = ref(db, "usuarios/" + uidGlobal);
+      onValue(usuarioLogadoRef, snap => {
+        if (!snap.exists()) return;
+        const dadosUsuario = snap.val();
 
-        snapshot.forEach(child => {
-          const usuario = child.val();
+        conviteCurtoGlobal = dadosUsuario.codigoConviteCurto || uidGlobal.slice(-6);
+        const link = `https://evolvereinvest.github.io/V1/login.index.html?ref=${conviteCurtoGlobal}`;
+        document.getElementById("linkConvite").textContent = link;
 
-          if (usuario.convidadoPor === uidGlobal) {
-            let totalInvestido = 0;
-            if (usuario.investimentos) {
-              Object.values(usuario.investimentos).forEach(inv => {
-                if (inv.status === "ativo") {
-                  totalInvestido += parseFloat(inv.preco || 0);
-                }
+        const usuariosRef = ref(db, "usuarios");
+        onValue(usuariosRef, snapshot => {
+          convidados = { LV1: [], LV2: [], LV3: [] };
+
+          snapshot.forEach(child => {
+            const usuario = child.val();
+
+            if (usuario.convidadoPor === conviteCurtoGlobal) {
+              let totalInvestido = 0;
+              if (usuario.investimentos) {
+                Object.values(usuario.investimentos).forEach(inv => {
+                  if (inv.status === "ativo") {
+                    totalInvestido += parseFloat(inv.preco || 0);
+                  }
+                });
+              }
+
+              convidados["LV1"].push({
+                nome: usuario.nome || "-",
+                capital: totalInvestido,
+                nivel: "LV1"
               });
             }
+          });
 
-            convidados["LV1"].push({
-              nome: usuario.nome || "-",
-              capital: totalInvestido,
-              nivel: "LV1"
-            });
-          }
+          renderTabela(abaAtual);
+          renderTotalGeral();
         });
-
-        renderTabela(abaAtual);
-        renderTotalGeral();
       });
 
       setInterval(creditarComissao, 300000);
